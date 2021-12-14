@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(StructConfig) 
+project(message) 
 
-add_library(head SHARED headers.hpp)
-set_target_properties(head PROPERTIES LINKER_LANGUAGE CXX LINKER_LANGUAGE C)
+SET (files
+    headers.hpp
+    message.hpp
+)
+
+add_library(${PROJECT_NAME} SHARED ${files})
+set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX LINKER_LANGUAGE C)
 
