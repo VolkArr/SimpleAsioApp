@@ -8,21 +8,22 @@ namespace custom{
         template<class T>
         class client_interface{
 
-            client_interface() :
-                    client_socket(tcp_context)
-                {
 
-                }
-            virtual ~client_interface(){
-
-                Disconnect();
-            }
 
             public:
 
+                client_interface() :
+                         client_socket(tcp_context)
+                {
+
+                }
+                 virtual ~client_interface(){
+                    Disconnect();
+                  }
+
                 bool Connect(const std::string& host, const uint16_t port){
 
-                    try{
+                    /*try{
                         tcp_connection = std::make_unique<connection<T>>();
 
                         boost::asio::ip::tcp::resolver resolver(tcp_context);
@@ -34,7 +35,8 @@ namespace custom{
                     catch(std::exception& error){
                         std::cerr << " Client Error: " << error.what() << std::endl;
                         return false;
-                    }
+                    }*/
+                    return false;
                 }
 
                 void Disconnect(){
@@ -43,8 +45,7 @@ namespace custom{
                     }
                     
                     tcp_context.stop();
-                    if (tcp_ContextThread.joinable())
-                        tcp_ContextThread.join();
+                    if (tcp_ContextThread.joinable()) tcp_ContextThread.join();
 
                     tcp_connection.release();
                     

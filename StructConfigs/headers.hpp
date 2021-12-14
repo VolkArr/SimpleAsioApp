@@ -1,3 +1,4 @@
+
 #include <memory>
 #include <thread>
 #include <mutex>
@@ -15,9 +16,12 @@
 #include <boost/asio/ts/buffer.hpp>
 #include <boost/asio/ts/internet.hpp>
 
-//beast
-#include <boost/beast.hpp>
+#include "server_interface.hpp"
+#include "client_interface.hpp"
+#include "connection.hpp"
+#include "message.hpp"
+#include "TcpQueue.hpp"
 
-void TestFun(){
-    std::cerr << "Test headers" << std::endl;
-}
+
+//beast
+//#include <boost/beast.hpp>

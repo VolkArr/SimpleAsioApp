@@ -5,6 +5,10 @@ project(message)
 SET (files
     headers.hpp
     message.hpp
+    client_interface.hpp
+    server_interface.hpp
+    TcpQueue.hpp
+    connection.hpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${files})

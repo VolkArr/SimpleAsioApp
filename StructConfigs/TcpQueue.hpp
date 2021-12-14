@@ -1,3 +1,4 @@
+#pragma once
 #include "headers.hpp"
 
 namespace custom{
@@ -9,7 +10,7 @@ namespace custom{
                 public:
                     TcpQueue() = default;
                     TcpQueue(const TcpQueue<T>&) =delete;
-                    virtual ~TcpQueue(){ clear{}; }
+                    virtual ~TcpQueue(){ clear(); }
 
                     const T& front(){
                         std::scoped_lock lock(mtx);
