@@ -59,5 +59,22 @@ namespace custom{
             }
         };
 
+        template<class T>
+        class connection;
+
+        template<class T>
+        struct message_sender{
+            std::shared_ptr<connection<T>> remote = nullptr;
+            message<T> msg;
+
+            friend std::ostream& operator << (std::ostream& os, const message_sender<T>& msg){
+                
+                os << msg.msg;
+                
+                return os;
+            }
+            
+        };
+
     }
 }
