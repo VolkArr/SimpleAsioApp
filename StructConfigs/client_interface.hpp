@@ -16,30 +16,31 @@ namespace custom{
 
             public:
 
-                client_interface() :
-                         client_socket(tcp_context)
+                client_interface()
                 {
 
                 }
+
                  virtual ~client_interface(){
                     Disconnect();
                   }
 
                 bool Connect(const std::string& host, const uint16_t port){
 
-                    /*try{
+                    try{
                         tcp_connection = std::make_unique<connection<T>>();
 
                         boost::asio::ip::tcp::resolver resolver(tcp_context);
-                        auto tcp_endpoints = resolver.resolve(host, std::to_string(port));
+                        boost::asio::ip::tcp::resolver::results_type tcp_endpoints = resolver.resolve(host, std::to_string(port));
+                        tcp_connection = std::make_unique<connection<T>>(custom::framework::connection<T>::owner::client, tcp_context, boost::asio::ip::tcp::socket(tcp_context), tcp_msqQueueRespond);
                         tcp_connection->ConnectToServer(tcp_endpoints);
-                        tcp_ContextThread = std::thread([this](){ tcp_context->run()});
+                        tcp_ContextThread = std::thread([this](){ tcp_context.run(); });
                         
                     }
                     catch(std::exception& error){
                         std::cerr << " Client Error: " << error.what() << std::endl;
                         return false;
-                    }*/
+                    }
                     return false;
                 }
 
@@ -57,12 +58,15 @@ namespace custom{
 
                 bool IsConnected(){
 
-                    if(tcp_connection)
-                        return tcp_connection->IsConnected();
-                    else
-                        return false;
+                    if(tcp_connection) return tcp_connection->IsConnected();
+                    else return false;
 
                 }
+
+                void Send(const custom::framework::message<T>& msg){
+                    if(IsConnected()) tcp_connection->Send(msg);
+                }
+
 
                 TcpQueue<message_sender<T>>& get_msgQueueRespond(){
                     return tcp_msqQueueRespond;
@@ -74,9 +78,7 @@ namespace custom{
                 boost::asio::io_context tcp_context;
 
                 std::thread tcp_ContextThread;
-
-                boost::asio::ip::tcp::socket client_socket;
-                
+             
                 std::unique_ptr<connection<T>> tcp_connection;
 
             private:
