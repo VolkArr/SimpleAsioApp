@@ -22,11 +22,9 @@ namespace custom{
 
                 connection(owner parent, boost::asio::io_context& _context, boost::asio::ip::tcp::socket socket, TcpQueue<message_sender<T>>& in):
                                 tcp_context(_context),
-                                tcp_socket( socket),
-                                tcp_msqQueueRespond(in)
-
-                            
+                                tcp_msqQueueRespond(in)                      
                 {
+                    tcp_socket = std::move(socket);
                     Parent = parent;
                     id = 0;
                 }

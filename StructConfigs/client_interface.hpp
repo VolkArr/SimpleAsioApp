@@ -32,7 +32,7 @@ namespace custom{
 
                         boost::asio::ip::tcp::resolver resolver(tcp_context);
                         boost::asio::ip::tcp::resolver::results_type tcp_endpoints = resolver.resolve(host, std::to_string(port));
-                        tcp_connection = std::make_unique<connection<T>>(custom::framework::connection<T>::owner::client, tcp_context, boost::asio::ip::tcp::socket(tcp_context), tcp_msqQueueRespond);
+                        tcp_connection = std::make_unique<connection<T>>(connection<T>::owner::client, tcp_context, boost::asio::ip::tcp::socket(tcp_context), tcp_msqQueueRespond);
                         tcp_connection->ConnectToServer(tcp_endpoints);
                         tcp_ContextThread = std::thread([this](){ tcp_context.run(); });
                         
