@@ -1,9 +1,12 @@
 #pragma once
 #include "connection.hpp"
+#include "TcpQueue.hpp"
+#include "message.hpp"
+#include "headers.hpp"
 
 namespace custom{
 
-    namespace server{
+    namespace framework{
         template<class T>
         class server_interface{
           public:
@@ -27,7 +30,7 @@ namespace custom{
 
                     std::clog << " Server start script run! " << std::endl;
                     return true;
-                }
+                }   
 
                 void Stop(){
                     tcp_context.stop();
@@ -45,8 +48,8 @@ namespace custom{
                             if(!error){
                                 std::clog << " New connection!: " << socket.remote_endpoint() << std::endl;
 
-                                // std::shared_ptr<connection::connection<T>> NewConnection = std::make_shared<connection::connection<T>>(
-                                //     connection::connection<T>::owner::server, tcp_context, std::move(socket), tcp_msqQueueRespond );
+                                // std::shared_ptr<connection<T>> NewConnection = std::make_shared<connection<T>>(
+                                //     connection<T>::owner::server, tcp_context, std::move(socket), tcp_msqQueueRespond );
                                 // if (onClientConnect(NewConnection)){
                                 //     tcp_deqConnections.push_back(std::move(NewConnection));
                                 //     tcp_deqConnections.back()->ConnectToClient(_IDclient++);
@@ -59,7 +62,7 @@ namespace custom{
                         });
                 }
 
-                void SendMsgToClient(std::shared_ptr<connection::connection<T>> client, const message::message<T>& msg){
+                void SendMsgToClient(std::shared_ptr<connection<T>> client, const message<T>& msg){
                     if(client && client->IsConnected()){
                         client->Send(msg);
                     }
@@ -70,7 +73,7 @@ namespace custom{
                     }
                 }
 
-                void AlertAllClients(const message::message<T>& msg, std::shared_ptr<connection::connection<T>> IgnoreClient = nullptr){
+                void AlertAllClients(const message<T>& msg, std::shared_ptr<connection<T>> IgnoreClient = nullptr){
                     bool ErrorConnections = false;
                     for(auto& client : tcp_deqConnections){
                         if (client && client->IsConnected()){
@@ -89,7 +92,9 @@ namespace custom{
 
                 }
 
-                void Update(size_t _MaxMsg = -1){ // size_t is uint that mean -1 == max
+                void Update(size_t _MaxMsg = -1, bool wait = false){ // size_t is uint that mean -1 == max
+
+                    if(wait) tcp_msqQueueRespond.wait();
 
                     size_t _msgCounter = 0;
                     while (_msgCounter < _MaxMsg && !tcp_msqQueueRespond.empty()){
@@ -105,22 +110,22 @@ namespace custom{
 
             protected:
 
-                virtual bool onClientConnect(std::shared_ptr<connection::connection<T>> client){
+                virtual bool onClientConnect(std::shared_ptr<connection<T>> client){
                     return false;
                 }
 
-                virtual void onClientDisconnect(std::shared_ptr<connection::connection<T>> client){
+                virtual void onClientDisconnect(std::shared_ptr<connection<T>> client){
 
                 }
 
-                virtual void onMessage(std::shared_ptr<connection::connection<T>> client, message::message<T>& msg ){
+                virtual void onMessage(std::shared_ptr<connection<T>> client, message<T>& msg ){
 
                 }
 
 
-                std::deque<std::shared_ptr<connection::connection<T>>> tcp_deqConnections;
+                std::deque<std::shared_ptr<connection<T>>> tcp_deqConnections;
 
-                tcpqueue::TcpQueue<message::message_sender<T>> tcp_msqQueueRespond;
+                TcpQueue<message_sender<T>> tcp_msqQueueRespond;
 
                 boost::asio::io_context tcp_context;
                 std::thread tcp_ContextThread;

@@ -1,4 +1,4 @@
-#include "../StructConfigs/headers.hpp"
+#include "../StructConfigs/server_libs.hpp"
 
 enum class Msg : uint32_t{
     RandomNumber,
@@ -6,21 +6,21 @@ enum class Msg : uint32_t{
 };
 
 /* Test Server */
-class TestServer : public custom::server::server_interface<Msg>{
+class TestServer : public custom::framework::server_interface<Msg>{
     public:
-        TestServer(uint16_t port) : custom::server::server_interface<Msg>(port){
+        TestServer(uint16_t port) : custom::framework::server_interface<Msg>(port){
 
         }
     protected:
-        virtual bool onClientConnect(std::shared_ptr<custom::connection::connection<Msg>> client){
+        virtual bool onClientConnect(std::shared_ptr<custom::framework::connection<Msg>> client){
             return true;
         }
         
-        virtual void onClientDisconnect(std::shared_ptr<custom::connection::connection<Msg>> client){
+        virtual void onClientDisconnect(std::shared_ptr<custom::framework::connection<Msg>> client){
 
         }
 
-        virtual void onMessage(custom::message::message<Msg>& msg, std::shared_ptr<custom::connection::connection<Msg>> client){
+        virtual void onMessage(custom::framework::message<Msg>& msg, std::shared_ptr<custom::framework::connection<Msg>> client){
 
         }
 };

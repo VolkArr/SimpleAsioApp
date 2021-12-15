@@ -1,5 +1,4 @@
-#include "../StructConfigs/headers.hpp"
-#include "../StructConfigs/message.hpp"
+#include "../StructConfigs/client_libs.hpp"
 
 enum class Msg : uint32_t{
     RandomNumber,
@@ -9,7 +8,7 @@ enum class Msg : uint32_t{
 
 int main(){
     std::clog << "Client start" << std::endl;
-    custom::message::message<Msg> msg;
+    custom::framework::message<Msg> msg;
     msg.head.id = Msg::RandomNumber;
     return -1;
 }

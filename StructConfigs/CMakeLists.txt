@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(message) 
+project(Simple_Framework) 
 
 SET (files
     headers.hpp
@@ -9,6 +9,8 @@ SET (files
     server_interface.hpp
     TcpQueue.hpp
     connection.hpp
+    client_libs.hpp
+    server_libs.hpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${files})

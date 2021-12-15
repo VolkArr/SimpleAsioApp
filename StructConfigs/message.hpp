@@ -4,7 +4,7 @@
 
 namespace custom{
 
-    namespace message{
+    namespace framework{
         
         template<class T>
         struct message_head{
@@ -66,7 +66,7 @@ namespace custom{
 
         template<class T>
         struct message_sender{
-            std::shared_ptr<connection::connection<T>> remote = nullptr;
+            std::shared_ptr<connection<T>> remote = nullptr;
             message<T> msg;
 
             friend std::ostream& operator << (std::ostream& os, const message_sender<T>& msg){

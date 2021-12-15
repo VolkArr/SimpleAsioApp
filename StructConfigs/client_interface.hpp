@@ -1,9 +1,13 @@
 #pragma once
 #include "connection.hpp"
+#include "TcpQueue.hpp"
+#include "message.hpp"
+#include "headers.hpp"
+
 
 namespace custom{
     
-    namespace client{
+    namespace framework{
 
         template<class T>
         class client_interface{
@@ -60,7 +64,7 @@ namespace custom{
 
                 }
 
-                tcpqueue::TcpQueue<message::message_sender<T>>& get_msgQueueRespond(){
+                TcpQueue<message_sender<T>>& get_msgQueueRespond(){
                     return tcp_msqQueueRespond;
                 }
 
@@ -73,10 +77,10 @@ namespace custom{
 
                 boost::asio::ip::tcp::socket client_socket;
                 
-                std::unique_ptr<connection::connection<T>> tcp_connection;
+                std::unique_ptr<connection<T>> tcp_connection;
 
             private:
-                tcpqueue::TcpQueue<message::message_sender<T>> tcp_msqQueueRespond;
+                TcpQueue<message_sender<T>> tcp_msqQueueRespond;
         };
 
     }

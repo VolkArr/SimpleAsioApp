@@ -3,7 +3,7 @@
 
 namespace custom{
 
-    namespace tcpqueue{
+    namespace framework{
             template<class T>
             class TcpQueue{
 
@@ -25,11 +25,17 @@ namespace custom{
                     void push_back(const T& data){
                         std::scoped_lock lock(mtx);
                         deq.emplace_back(std::move(data));
+
+                        std::unique_lock<std::mutex> uniq_lock(CVmtx);
+                        CV.notify_one();
                     }
 
                     void push_front(const T& data){
                         std::scoped_lock lock(mtx);
                         deq.emplace_front(std::move(data));
+
+                        std::unique_lock<std::mutex> uniq_lock(CVmtx);
+                        CV.notify_one();
                     }
 
                     void clear(){
@@ -45,6 +51,13 @@ namespace custom{
                     size_t size(){
                         std::scoped_lock lock(mtx);
                         return deq.size();
+                    }
+
+                    void wait(){
+                        while(empty()){
+                            std::unique_lock<std::mutex> uniq_lock(CVmtx);
+                            CV.wait(uniq_lock); 
+                        }
                     }
 
                     T pop_front(){
@@ -64,6 +77,8 @@ namespace custom{
                 protected:
                     std::mutex mtx;
                     std::deque<T> deq; 
+                    std::condition_variable CV;
+                    std::mutex CVmtx;
             };
 
     }
