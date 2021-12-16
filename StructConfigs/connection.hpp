@@ -24,7 +24,7 @@ namespace custom{
                                 tcp_context(_context),
                                 tcp_msqQueueRespond(in)                      
                 {
-                    tcp_socket = std::move(socket);
+                    tcp_socket = socket;
                     Parent = parent;
                     id = 0;
                 }
@@ -94,7 +94,7 @@ namespace custom{
                 }
 
                 void WriteBody() {
-                    boost::asio::async_write(tcp_socket, boost::asio::buffer(tcp_msqQueueRequest.front().body.data(), tcp_msqQueueRequest.front().head.size()),
+                    boost::asio::async_write(tcp_socket, boost::asio::buffer(tcp_msqQueueRequest.front().body.data(), tcp_msqQueueRequest.front().head.size),
                     [this](std::error_code error, size_t length){
                         if(!error){
 
