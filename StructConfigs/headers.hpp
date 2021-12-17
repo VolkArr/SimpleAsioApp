@@ -23,5 +23,9 @@
 #include "TcpQueue.hpp"
 
 
+//boost
+#include <boost/bind/bind.hpp>
+#include <boost/bind.hpp>
+
 //beast
 //#include <boost/beast.hpp>

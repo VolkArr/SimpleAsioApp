@@ -48,14 +48,14 @@ namespace custom{
                             if(!error){
                                 std::clog << " New connection!: " << socket.remote_endpoint() << std::endl;
 
-                                // std::shared_ptr<connection<T>> NewConnection = std::make_shared<connection<T>>(
-                                //     connection<T>::owner::server, tcp_context, std::move(socket), tcp_msqQueueRespond );
-                                // if (onClientConnect(NewConnection)){
-                                //     tcp_deqConnections.push_back(std::move(NewConnection));
-                                //     tcp_deqConnections.back()->ConnectToClient(_IDclient++);
-                                //     std::clog << " [" << tcp_deqConnections.back()->GetID() <<  "] Connect accepted! " << std::endl;
-                                // }
-                                // else std::clog << " Connection denied! " << std::endl;
+                                std::shared_ptr<connection<T>> NewConnection = std::make_shared<connection<T>>(
+                                    connection<T>::owner::server, tcp_context, std::move(socket), tcp_msqQueueRespond );
+                                if (onClientConnect(NewConnection)){
+                                    tcp_deqConnections.push_back(std::move(NewConnection));
+                                    tcp_deqConnections.back()->ConnectToClient(_IDclient++);
+                                    std::clog << " [" << tcp_deqConnections.back()->GetID() <<  "] Connect accepted! " << std::endl;
+                                }
+                                else std::clog << " Connection denied! " << std::endl;
                             }
                             else std::cerr << " Server new connection error: " << error.message() << std::endl; 
                             WaitForClientConnection();

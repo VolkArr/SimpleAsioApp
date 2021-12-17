@@ -4,6 +4,7 @@
 #include "TcpQueue.hpp"
 
 
+
 template<class T>
 class TcpQueue;
 
@@ -22,9 +23,10 @@ namespace custom{
 
                 connection(owner parent, boost::asio::io_context& _context, boost::asio::ip::tcp::socket socket, TcpQueue<message_sender<T>>& in):
                                 tcp_context(_context),
-                                tcp_msqQueueRespond(in)                      
+                                tcp_socket (std::move(socket)),
+                                tcp_msqQueueRespond(in)                    
                 {
-                    tcp_socket = socket;
+                    
                     Parent = parent;
                     id = 0;
                 }
@@ -39,12 +41,12 @@ namespace custom{
                 void ConnectToServer(const boost::asio::ip::tcp::resolver::results_type& endpoints){
                     if(Parent == owner::client){
                         boost::asio::async_connect(tcp_socket, endpoints,
-                        [this](std::error_code& error, boost::asio::ip::tcp::endpoint endpoint){
-                            if(!error) ReadHeader();
-                        });
+                        [this](boost::system::error_code& error, boost::asio::ip::tcp::endpoint endpoint){ if(!error) ReadHeader(); });
                     }
                     
                 }//Call only by clients
+
+
                 void ConnectToClient(uint32_t pid = 0 ){
                     if(Parent == owner::server){
                         if(tcp_socket.is_open()){
@@ -52,7 +54,7 @@ namespace custom{
                             ReadHeader();
                         }
                     }
-                }
+                } // Call only by server
 
                 void Disconnect() {
                     if (IsConnected()) boost::asio::post(tcp_context, [this]() { tcp_socket.close(); });
@@ -62,7 +64,7 @@ namespace custom{
                 bool IsConnected() const { return tcp_socket.is_open(); }
 
 
-                void StartListening() {}
+                void StartListening() {} // todo
 
                 void Send(const message<T>& msg){
                     boost::asio::post(tcp_context, [this, msg](){
@@ -75,7 +77,7 @@ namespace custom{
                 private:
                 void WriteHeader(){
                     boost::asio::async_write(tcp_socket, boost::asio::buffer(&tcp_msqQueueRequest.front().head, sizeof(message_head<T>)), 
-                    [this](std::error_code error, size_t length){
+                    [this](std::error_code error, std::size_t length){
                         if(!error){
                             if(tcp_msqQueueRequest.front().body.size() > 0){
                                 WriteBody();
@@ -95,7 +97,7 @@ namespace custom{
 
                 void WriteBody() {
                     boost::asio::async_write(tcp_socket, boost::asio::buffer(tcp_msqQueueRequest.front().body.data(), tcp_msqQueueRequest.front().head.size),
-                    [this](std::error_code error, size_t length){
+                    [this](std::error_code error, std::size_t length){
                         if(!error){
 
                                 tcp_msqQueueRequest.pop_front();
@@ -111,7 +113,7 @@ namespace custom{
 
                 void ReadHeader() {
                     boost::asio::async_read(tcp_socket, boost::asio::buffer(&tmpMsg.head, sizeof(message_head<T>)),
-                    [this](std::error_code error, size_t length){
+                    [this](std::error_code error, std::size_t length){
                         if(!error){
                             if(tmpMsg.head.size > 0){
                                 tmpMsg.body.resize(tmpMsg.head.size);
@@ -129,7 +131,7 @@ namespace custom{
 
                 void ReadBody() {
                     boost::asio::async_read(tcp_socket, boost::asio::buffer(tmpMsg.body.data(), tmpMsg.body.size()),
-                    [this](std::error_code error, size_t length){
+                    [this](std::error_code error, std::size_t length){
                         if (!error) AddToIncomingMessageQueue();
                         else {
                             std::cerr << " [" << id << "] Read body error: "  << error.message() << std::endl;
@@ -155,7 +157,6 @@ namespace custom{
                 TcpQueue<message<T>> tcp_msqQueueRequest; // out
                 TcpQueue<message_sender<T>>& tcp_msqQueueRespond; // in
                 message<T> tmpMsg;
-                message<T> tcp_msgTMP_in;
                 owner Parent = owner::server;
                 uint32_t id;
                     
